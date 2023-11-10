@@ -1,6 +1,9 @@
+import { useEffect, useState } from "react";
 import Diena from "./Diena";
 
 function App() {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const pirmdienasStundas = [
     "Sports pie Klintas",
     "Dabaszinības mīlu fiziku",
@@ -58,13 +61,47 @@ function App() {
   ];
 
   // Kā visasStundas pārtais'oit par masīvu?
-  const dienasJSX = visasStundas.map((diena, indekss) => {
-    return <Diena key={indekss} diena={diena.diena} stundas={diena.stundas} />;
+  useEffect(() => {
+    async function getLessons(){
+      const response = await fetch("https://cheese-cake.onthewifi.com/api/lessons");
+      const data = await response.json();
+      console.log(data.IPb22);
+      const clensedData = [
+        {
+        diena: "Pirmdiena",
+        stundas: data.IPb22[0].classes
+        },
+        {
+          diena: "Otradiena",
+          stundas: data.IPb22[1].classes
+          },
+          {
+            diena: "Tresdiena",
+            stundas: data.IPb22[2].classes
+            },
+            {
+              diena: "Ceturndiena",
+              stundas: data.IPb22[3].classes
+              },
+              {
+                diena: "Piekdiena",
+                stundas: data.IPb22[4].classes
+                }
+      ]
+      
+    setData(clensedData);
+    
+    setLoading(false);
+    }
+    getLessons();
+  }, []);
+
+  const dienasJSX = data.map((dataa, i) => {
+    return <Diena key={i} diena={dataa.diena} stundas={dataa.stundas} />;
   });
   return (
     <>
-      <div>Šīs nedēļas stunas, paldies, Matīsss</div>
-      {dienasJSX}
+      {loading ? <p>Loading...</p> : dienasJSX}
     </>
   );
 }
